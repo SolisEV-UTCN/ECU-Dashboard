@@ -16,6 +16,8 @@ uint32_t min_temp_value;
  * AFTER READING THE INFORMATION FROM THE MESSAGE IT WILL BE POPPED FROM THE QUEUE.
  */
 
+int battery_current;
+int battery_voltage;
 void Can_receive_handler()
 {
 	struct Queue_Can_Msg msg;
@@ -57,9 +59,10 @@ void Can_receive_handler()
 
 		case BMS_TX_SOC:
 
-			uint32_t SOC = ((msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4]);
+			union reinterpret_cast SOC;
+			SOC.Uint32 = ((msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4]);
 
-			can_data.bms.State_Of_Charge = (float)(SOC / 100);
+			can_data.bms.State_Of_Charge = SOC.Float32 * 100; //[%]
 
 			break;
 
@@ -85,11 +88,9 @@ void Can_receive_handler()
 
 		case BMS_TX_BATTERY_PACK_VOLTAGE_CURRENT:
 
-			uint32_t battery_voltage = (msg.data.byte[3] << 24) | (msg.data.byte[2] << 16) | (msg.data.byte[1] << 8) | msg.data.byte[0];
-			can_data.bms.battery_voltage.Float32 = (float)battery_voltage / 1000.0f;
+			battery_voltage = (msg.data.byte[3] << 24) | (msg.data.byte[2] << 16) | (msg.data.byte[1] << 8) | msg.data.byte[0];
 
-			uint32_t battery_current = (msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4];
-			can_data.bms.battery_current.Float32 = (float)battery_current / 1000.0f;
+			battery_current = (msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4];
 
 			ActivityCheck.bms = 1; //Find this variable used in display.c function BOOT_Display
 
@@ -184,6 +185,14 @@ void Can_receive_handler()
 		case AUXILIARY_TX_ACTIVITY_CHECK:
 
 			ActivityCheck.auxiliary = 1;
+
+			break;
+
+		case SD_CARD_TX_ACTIVITY_CHECK:
+
+			if(msg.data.byte[0] == TRUE)
+				ActivityCheck.sd_card = TRUE;
+			else ActivityCheck.sd_card = FALSE;
 
 			break;
 

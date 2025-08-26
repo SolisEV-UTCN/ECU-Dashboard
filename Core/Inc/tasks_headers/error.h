@@ -21,6 +21,7 @@ struct Modules_Activity
 	uint8_t mppt2;
 	uint8_t mppt3;
 	uint8_t mppt4;
+	uint8_t sd_card;
 };
 
 struct pop_up_error

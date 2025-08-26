@@ -1,6 +1,5 @@
 #include"main.h"
 
-
 TaskHandle_t display_handle, can_msg_handle, can_transmit_handle,
 		buttons_handle, RTC_handle, buzzer_handle, GPS_handle,pedal_reading_handle;
 QueueHandle_t Can_Queue;

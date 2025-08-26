@@ -1,7 +1,7 @@
 #include"main.h"
 
-#define ZERO_NUMBER_VALUES 4
-#define ADMITABLE_REGEN_REFFRECE 0.44F/*[%]*/ // 20A maximum, the maximum reffrece is 45A
+#define ZERO_NUMBER_VALUES 2
+#define ADMITABLE_REGEN_REFFRECE 0.5F/*[%]*/ // 20A maximum, the maximum reffrece is 45A
 
 uint8_t pedal_noice_cancelling = 0;
 extern union reinterpret_cast current_reffrence;

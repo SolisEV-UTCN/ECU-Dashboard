@@ -2,7 +2,7 @@
 
 extern ADC_HandleTypeDef hadc1;
 extern uint8_t pedal_noice_cancelling;
-#define NOICE_CANCELLING_PEDAL_LIMIT 200
+#define NOICE_CANCELLING_PEDAL_LIMIT 400
 
 float convert_pedal_to_current()
 {

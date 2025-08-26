@@ -8,6 +8,8 @@
 #define CRUISE_UP_VALUE   10.0f
 #define CRUISE_DOWN_VALUE 10.0f
 
+#define FIVE_KM_IN_RPM     20.0f
+
 extern CAN_HandleTypeDef hcan;
 extern struct Data_aquisition_can can_data;
 extern struct buttons_layout buttons;
@@ -34,7 +36,7 @@ void motor_control()
 				buttons.wheel.brake_swap   !=  BUTTON_IS_PRESSED         &&
 				buttons.pedal.brake_lights !=  BUTTON_IS_PRESSED)
 		{
-			Drive_Mode = CRUISE_CONTROL_MODE;
+			Drive_Mode = INERTION_CRUISE_CONTROL;
 			if( Cruise_Set_Flag == FALSE)
 			{
 				Cruise_Set_Point = can_data.invertor.motor_rpm.Float32;
@@ -44,8 +46,8 @@ void motor_control()
 		else
 		{
 			Drive_Mode = PEDAL_ACCELERATION_MODE;
-			Rising_Edge_Release( 	&buttons.wheel.cruise_on,
-									&previous_button_state.wheel.cruise_on);
+			Rising_Edge_Release(&buttons.wheel.cruise_on,
+								&previous_button_state.wheel.cruise_on);
 			Cruise_Set_Flag = FALSE;
 		}
 	}
@@ -70,9 +72,9 @@ void motor_control()
 			//NOT IMPLEMENTED YET, FOR FUTURE IMPROVEMENTS
 			Solar_Only_Mode();
 
-		case IDEAL_CRUISE_CONTROL:
+		case INERTION_CRUISE_CONTROL:
 
-			Ideal_Cruise_Control();
+			Inertion_Cruise_Control();
 
 			break;
 
@@ -129,9 +131,25 @@ void Solar_Only_Mode()
 
 }
 
-void Ideal_Cruise_Control()
+void Inertion_Cruise_Control()
 {
+	float   check_RPM = can_data.invertor.motor_rpm.Float32; //400
+	static  uint8_t accel_on_flag = 0;
 
+	if( check_RPM - Cruise_Set_Point < FIVE_KM_IN_RPM && accel_on_flag == 0)
+		current_reffrence.Float32 = 1.0f;
+	else
+	{
+		accel_on_flag = 1;
+		current_reffrence.Float32 = 0.0f;
+	}
+
+	if( Cruise_Set_Point - check_RPM > 0 && accel_on_flag == 1)
+	{
+		accel_on_flag = 0;
+	}
+
+	velocity.Float32 = Cruise_Set_Point + FIVE_KM_IN_RPM + 10.0f; // CHECK IF ITS BETTER WITH LOWER RPM
 }
 
 void Transmit_motor_control(union reinterpret_cast velocity, union reinterpret_cast current_reffrence)

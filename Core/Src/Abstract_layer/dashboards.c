@@ -11,6 +11,8 @@ extern CAN_HandleTypeDef hcan;
 
 struct pop_up_error pop_up_error_condition = {0};
 
+extern int battery_voltage;
+extern int battery_current;
 
 void Display_Init()
 {
@@ -23,16 +25,15 @@ void MAIN_Display(char *buffer)
 {
 	//first row
 	HD44780_SetCursor(0, 0);
-	snprintf(buffer, 21, "%4.1f |V %4.0f | %4.3f",
+	snprintf(buffer, 21, "%4.1f |V %3.0f  | %4.3f",
 			can_data.bms.maximum_cell_temperature,
 			 (can_data.invertor.motor_velocity.Float32) * 3.6F,
 			can_data.bms.maximum_cell_voltage);
 	HD44780_PrintStr(buffer);
 
-	can_data.bms.State_Of_Charge = 0;
 	//second row
 	HD44780_SetCursor(0, 1);
-	snprintf(buffer, 21, "%4.1f |B %4.1f | %4.3f",
+	snprintf(buffer, 21, "%4.1f |B %3.0f %%| %4.3f",
 			can_data.bms.minimum_cell_temperature,
 			can_data.bms.State_Of_Charge,
 			can_data.bms.minimum_cell_voltage);
@@ -45,11 +46,17 @@ void MAIN_Display(char *buffer)
 	if (can_data.mppt2.output_current >= MPPT_SIGN_ERROR_VALUE)
 		can_data.mppt2.output_current = 0;
 
-	float invertor_power = can_data.invertor.bus_current.Float32 * can_data.invertor.bus_voltage.Float32;
-	float bms_power = can_data.bms.battery_current.Float32 * can_data.bms.battery_voltage.Float32;
+	if( can_data.mppt3.output_current >= MPPT_SIGN_ERROR_VALUE)
+		can_data.mppt3.output_current = 0;
+
+	if( can_data.mppt4.output_current >= MPPT_SIGN_ERROR_VALUE)
+		can_data.mppt4.output_current = 0;
+
+	float bms_power      = (float)(battery_current * battery_voltage)
+							/1000000.0f;
 
 	HD44780_SetCursor(0, 2);
-	snprintf(buffer, 21, "I: %5.1f BM: %5.1f", invertor_power, bms_power);
+	snprintf(buffer, 21, "POWER:    %6.1f   ", bms_power);
 	HD44780_PrintStr(buffer);
 
 	//forth row
@@ -58,7 +65,9 @@ void MAIN_Display(char *buffer)
 
 	char drive_state[7] = "  IDLE";
 
+#if ( PIT_TESTING == 1)
 	can_data.bms.state = DRIVE;
+#endif
 
 	switch(can_data.bms.state)
 	{
@@ -88,12 +97,24 @@ void MAIN_Display(char *buffer)
 	}
 
 	float mppt_power = ( (can_data.mppt1.output_current * can_data.mppt1.output_voltage) +
-				(can_data.mppt2.output_current * can_data.mppt2.output_voltage) );
-	snprintf(buffer,21,"P:  %5.1f %s %s", mppt_power,
-										  GetSign(buttons.wheel.blink_left,
-												  buttons.wheel.blink_right,
-												  buttons.wheel.avarie),
-										  drive_state);
+						 (can_data.mppt2.output_current * can_data.mppt2.output_voltage) +
+						 (can_data.mppt3.output_current * can_data.mppt3.output_voltage) +
+						 (can_data.mppt4.output_current * can_data.mppt4.output_voltage) );
+
+#if( GUN_POINT_ROAD_TESTING == 1)
+	if( buttons.wheel.cruise_down == BUTTON_IS_PRESSED)
+	snprintf(buffer,21,"%5.1f FAN %s %s", 	mppt_power,
+										  	GetSign(buttons.wheel.blink_left,
+											buttons.wheel.blink_right,
+											buttons.wheel.avarie),
+											drive_state);
+	else
+	snprintf(buffer,21,"%5.1f     %s %s", 	mppt_power,
+											GetSign(buttons.wheel.blink_left,
+											buttons.wheel.blink_right,
+											buttons.wheel.avarie),
+											drive_state);
+#endif
 
 	HD44780_PrintStr(buffer);
 
@@ -139,8 +160,7 @@ void BOOT_Display(char* buffer)
 {
 
 	HD44780_SetCursor(0, 0);
-	snprintf(buffer, 21, "D:%02d.%02d Ora:%02d.%02d.%02d", RealTimeClock.dom,
-														   RealTimeClock.month,
+	snprintf(buffer, 21, "SD: %s Ora:%02d.%02d.%02d",      GetString(ActivityCheck.sd_card),
 														   RealTimeClock.hour,
 														   RealTimeClock.minutes,
 														   RealTimeClock.seconds);

@@ -67,8 +67,15 @@ void Buttons_handler()
 		buttons.wheel.brake_swap     = Steering_Wheel_Reading(Wheel_Adress.brake_swap)?
 									min(buttons.wheel.brake_swap + 1, BUTTON_IS_PRESSED) : 0;
 
+#if ( GUN_POINT_ROAD_TESTING == 1)
 		buttons.wheel.cruise_up	     = Steering_Wheel_Reading(Wheel_Adress.cruise_up)?
 									min(buttons.wheel.cruise_up + 1, BUTTON_IS_PRESSED)  : 0;
+
+		Rising_Edge_Toggle(&buttons.wheel.cruise_down,
+							Wheel_Adress.cruise_down,
+							&previous_button_state.wheel.cruise_down,
+							TRUE);
+#endif
 
 		Rising_Edge_Toggle(	&buttons.wheel.blink_left,
 				 	 	 	Wheel_Adress.blink_left,
@@ -95,38 +102,16 @@ void Buttons_handler()
 							Wheel_Adress.display_switch,
 							&previous_button_state.wheel.display_switch);
 
+#if ( PIT_TESTING == 1)
 		/*THIS BUTTON IS RELEASED IN THE invertor.c FILE AT THE LINE 92*/
 		Rising_Edge_Press(	&buttons.wheel.cruise_down,
 							Wheel_Adress.cruise_down,
 							&previous_button_state.wheel.cruise_down);
 
 		/*THIS BUTTON IS RELEASED IN THE invertor.c FILE AT THE LINE 86*/
-//		Rising_Edge_Press(	&buttons.wheel.cruise_up,
-//							Wheel_Adress.cruise_up,
-//							&previous_button_state.wheel.cruise_up);
+		Rising_Edge_Press(	&buttons.wheel.cruise_up,
+							Wheel_Adress.cruise_up,
+							&previous_button_state.wheel.cruise_up);
+#endif
 	}
 }
-
-uint8_t Fan_Control()
-{
-	static uint8_t fan_state;
-	static bool fan_working;
-
-	fan_state = (HAL_GPIO_ReadPin(GPIOB, INPUT_FAN_Pin)) ?
-	min( fan_state + 1, BUTTON_IS_PRESSED) : 0;
-
-	if( max_temp_value >= MAX_CELL_TEMPERATURE_FOR_FAN )
-	{
-		fan_state   = BUTTON_IS_PRESSED;
-		fan_working = TRUE;
-	}
-
-	if( max_temp_value < MIN_CELL_TEMPERATURE_FOR_FAN && fan_working == TRUE)
-	{
-		fan_state   = RELEASE_BUTTON;
-		fan_working = FALSE;
-	}
-
-	return fan_state;
-}
-

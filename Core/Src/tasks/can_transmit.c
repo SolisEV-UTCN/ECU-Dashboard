@@ -6,6 +6,8 @@ extern union reinterpret_cast decimalLat;
 extern uint8_t satelliteNumber;
 
 extern CAN_HandleTypeDef hcan;
+extern struct buttons_layout buttons;
+extern struct Data_aquisition_can can_data;
 
 
 /* FREERTOS TASK FOR TRANSMITING THE MESSAGES FOR BMS, INVERTOR AND AUXILIARY.
@@ -17,8 +19,6 @@ void Can_transmit_handler() // 100 MS
 	TickType_t xLastWakeTime;
 	const TickType_t xPeriod = pdMS_TO_TICKS(100);
 
-	bool bms_state = FALSE;
-
 	xLastWakeTime = xTaskGetTickCount();
 
 	while ( pdTRUE )
@@ -26,42 +26,63 @@ void Can_transmit_handler() // 100 MS
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
 /********** BATTERY MANAGEMENT SYSTEM CONTROL ***********/
-		bms_state = get_bms_state();
+//		bms_state = get_bms_state();
+		MPPT_Transmit();
 
 /********** INVERTOR ACCELERATION / REGENERATION BREAK / CRUISE CONTROL ***********/
-#if (PIT_TESTING == 1)
-		bms_state = TRUE;
-#endif
 
-		if( bms_state == TRUE ) motor_control();
+		motor_control();
 
 /********** AUXILIARY CONTROL ***********/
 		auxiliary_control();
+
 	}
 }
 /* THE MOST IMPORTANT INFORMATION WAS TRASNMITTED, MEANING THE NEXT ONE IS THE GPS* THIS FUNCTION WORKS ONLY AFTER THE BMS, INV OR AUXILIARY DATA WAS TRASMITT */
-void HAL_CAN_TxMailbox0CompleteCallback(CAN_HandleTypeDef *hcan) {
+void MPPT_Transmit()
+{
+	static const CAN_TxHeaderTypeDef MPPT_header =
+	{ MPPT_POWER_TX_FOR_TELEMERTY, 0x00, CAN_RTR_DATA, CAN_ID_STD, 8, DISABLE };
+	static uint32_t MPPT_mailbox;
+	static uint8_t MPPT_data[8];
 
-	static const CAN_TxHeaderTypeDef GPS_header =
-	{ GPS_TX_LAT_AND_LONG, 0x00, CAN_RTR_DATA, CAN_ID_STD, 8, DISABLE };
-	static uint32_t GPS_mailbox;
-	static uint8_t GPS_data[8];
+	static uint16_t mppt1;
+	static uint16_t mppt2;
+	static uint16_t mppt3;
+	static uint16_t mppt4;
 
-	if( GPS_reading_status == TRUE && satelliteNumber >= MINIMUM_SATELITE_NUMBER )
-	{
-		GPS_data[0] = ( decimalLong.Uint32 & 0xFF);
-		GPS_data[1] = ((decimalLong.Uint32 >> 8 ) & 0xFF);
-		GPS_data[2] = ((decimalLong.Uint32 >> 16) & 0xFF);
-		GPS_data[3] = ((decimalLong.Uint32 >> 24) & 0xFF);
+	if (can_data.mppt1.output_current >= MPPT_SIGN_ERROR_VALUE)
+		can_data.mppt1.output_current = 0;
 
-		GPS_data[4] = ( decimalLat.Uint32 & 0xFF);
-		GPS_data[5] = ((decimalLat.Uint32 >> 8 ) & 0xFF);
-		GPS_data[6] = ((decimalLat.Uint32 >> 16) & 0xFF);
-		GPS_data[7] = ((decimalLat.Uint32 >> 24) & 0xFF);
+	if (can_data.mppt2.output_current >= MPPT_SIGN_ERROR_VALUE)
+		can_data.mppt2.output_current = 0;
 
-		HAL_CAN_AddTxMessage(hcan, &GPS_header, GPS_data, &GPS_mailbox);
+	if( can_data.mppt3.output_current >= MPPT_SIGN_ERROR_VALUE)
+		can_data.mppt3.output_current = 0;
 
-		GPS_reading_status = FALSE;
-	}
+	if( can_data.mppt4.output_current >= MPPT_SIGN_ERROR_VALUE)
+		can_data.mppt4.output_current = 0;
+
+	mppt1 = (uint16_t)(can_data.mppt1.output_voltage * can_data.mppt1.output_current);
+	mppt2 = (uint16_t)(can_data.mppt2.output_voltage * can_data.mppt2.output_current);
+	mppt3 = (uint16_t)(can_data.mppt3.output_voltage * can_data.mppt3.output_current);
+	mppt4 = (uint16_t)(can_data.mppt4.output_voltage * can_data.mppt4.output_current);
+
+	MPPT_data[0] = (   mppt1 & 0xFF );
+	MPPT_data[1] = ( ( mppt1 >> 8) & 0xFF);
+
+	MPPT_data[2] = (   mppt2 & 0xFF );
+	MPPT_data[3] = ( ( mppt2 >> 8) & 0xFF);
+
+	MPPT_data[4] = (   mppt3 & 0xFF );
+	MPPT_data[5] = ( ( mppt3 >> 8) & 0xFF);
+
+	MPPT_data[6] = (   mppt4 & 0xFF );
+	MPPT_data[7] = ( ( mppt4 >> 8) & 0xFF);
+
+	HAL_CAN_AddTxMessage(&hcan, &MPPT_header, MPPT_data, &MPPT_mailbox);
 }
+
+
+
 

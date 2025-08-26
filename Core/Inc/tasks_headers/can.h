@@ -166,6 +166,8 @@ enum State {
 
 #define AUXILIARY_TX_ACTIVITY_CHECK 0x700
 
+#define SD_CARD_TX_ACTIVITY_CHECK   0x303
+
 /*AUXILIARY SIGNAL END HERE */
 
 /* TELEMETRY RELATED DEFINES*/
@@ -182,17 +184,20 @@ struct Telemetry_RTC
 	uint8_t month;
 };
 
-#define GPS_TX_LAT_AND_LONG 0x032 // maximum priority to get rid of it as fast as possible
+#define MPPT_POWER_TX_FOR_TELEMERTY 0x032 // maximum priority to get rid of it as fast as possible
+#define MPPT_ENABLE 0x239
 
 void USB_LP_CAN_RX0_IRQHandler(void); //see in tasks/can.c//see in tasks/can.c
 void Can_receive_handler(void);
 void Can_transmit_handler(void);
 void pedal_reading_handler(void);
 bool get_bms_state(void);
+void MPPT_Transmit();
 void motor_control(void);
+void mppt_control(void);
 void Cruise_Control_Mode(void);
 void Solar_Only_Mode(void);
-void Ideal_Cruise_Control(void);
+void Inertion_Cruise_Control(void);
 void Pedal_Mode(void);
 void auxiliary_control(void);
 uint8_t Fan_Control(void);

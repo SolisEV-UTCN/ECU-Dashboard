@@ -25,16 +25,18 @@ void auxiliary_control()
 		auxiliary_can_data |= AUX_CAMERA; //MERGEEE
 
 	if (buttons.panel.all_lights == BUTTON_IS_PRESSED)
-		auxiliary_can_data |= AUX_ALL_LIGHTS; // MERGE
+		auxiliary_can_data |= AUX_ALL_LIGHTS; // MERGEE
 
 	if (buttons.wheel.avarie == BUTTON_IS_PRESSED)
 		auxiliary_can_data |= AUX_AVARIE; // MERGEE
 
-//	if (buttons.wheel.cruise_up == BUTTON_IS_PRESSED)
-//		auxiliary_can_data |= AUX_HORN; //NOT TESTED
+#if( GUN_POINT_ROAD_TESTING == 1)
+	if (buttons.wheel.cruise_up == BUTTON_IS_PRESSED)
+		auxiliary_can_data |= AUX_HORN; //NOT TESTED
 
-	if (buttons.panel.fan = BUTTON_IS_PRESSED)
+	if (buttons.wheel.cruise_down == BUTTON_IS_PRESSED)
 		auxiliary_can_data |= AUX_FAN;
+#endif
 
 	HAL_CAN_AddTxMessage(&hcan, &aux_header, &auxiliary_can_data, &aux_mailbox);
 }

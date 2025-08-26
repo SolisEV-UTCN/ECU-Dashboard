@@ -29,7 +29,8 @@ static inline uint16_t max(uint16_t a, uint16_t b)
 
 #define PEDAL_MIN 0U
 #define PEDAL_MAX 3530U
-#define PIT_TESTING 1
+#define PIT_TESTING 0
+#define GUN_POINT_ROAD_TESTING 1
 /*END USER DEFINES*/
 
 /*FUNCTION PROTOTYPES FROM TASKS HERE */
