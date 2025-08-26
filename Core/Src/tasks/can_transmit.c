@@ -26,7 +26,8 @@ void Can_transmit_handler() // 100 MS
 		vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
 /********** BATTERY MANAGEMENT SYSTEM CONTROL ***********/
-//		bms_state = get_bms_state();
+//		bms_state = get_bms_state(); //Battery was running in standalone.
+
 		MPPT_Transmit();
 
 /********** INVERTOR ACCELERATION / REGENERATION BREAK / CRUISE CONTROL ***********/

@@ -20,10 +20,10 @@ void config_handler()
 
 	while (pdTRUE)
 	{
-//		vTaskDelete(can_msg_handle);
-//		vTaskDelete(can_transmit_handle);
-//		vTaskDelete(display_handle);
-//		vTaskDelete(buttons_handle);
+		vTaskDelete(can_msg_handle);
+		vTaskDelete(can_transmit_handle);
+		vTaskDelete(display_handle);
+		vTaskDelete(buttons_handle);
 		vTaskDelete(buzzer_handle);
 		vTaskDelete(GPS_handle);
 		vTaskDelete(NULL); // DELETS ITSELF;
