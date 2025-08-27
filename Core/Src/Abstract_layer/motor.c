@@ -88,10 +88,10 @@ void motor_control()
 
 void Pedal_Mode()
 {
-	if(buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
-			velocity.Float32 = REGEN_ON_BREAK;
+//	if(buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
+//			velocity.Float32 = REGEN_ON_BREAK;
 
-	else if ( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
+	if ( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
 			velocity.Float32 = FORWARD_MAX_VELOCITY;
 
 	else if (buttons.panel.drv_reverse == BUTTON_IS_PRESSED)

@@ -31,11 +31,11 @@ void pedal_reading_handler()
 			else current_reffrence.Float32 = 0;
 
 			//PEDAL REGEN LIMITATION DUE TO CELL DATASHEET CHARGING CURRENT
-			if( buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
-			{
-				if(current_reffrence.Float32 >= ADMITABLE_REGEN_REFFRECE)
-					current_reffrence.Float32 = ADMITABLE_REGEN_REFFRECE;
-			}
+//			if( buttons.wheel.brake_swap == BUTTON_IS_PRESSED)
+//			{
+//				if(current_reffrence.Float32 >= ADMITABLE_REGEN_REFFRECE)
+//					current_reffrence.Float32 = ADMITABLE_REGEN_REFFRECE;
+//			}
 
 			pedal_noice_cancelling   = 0;
 			average                  = 0;
