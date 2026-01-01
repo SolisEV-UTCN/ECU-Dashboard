@@ -1,7 +1,8 @@
 #include"main.h"
 
 TaskHandle_t display_handle, can_msg_handle, can_transmit_handle,
-		buttons_handle, RTC_handle, buzzer_handle, GPS_handle,pedal_reading_handle;
+		buttons_handle, RTC_handle, buzzer_handle, GPS_handle,pedal_reading_handle,
+		xbee_handle;
 QueueHandle_t Can_Queue;
 
 extern CAN_HandleTypeDef hcan;
@@ -26,6 +27,7 @@ void config_handler()
 		vTaskDelete(buttons_handle);
 		vTaskDelete(buzzer_handle);
 		vTaskDelete(GPS_handle);
+		vTaskDelete(xbee_handle);
 		vTaskDelete(NULL); // DELETS ITSELF;
 	}
 }
@@ -51,7 +53,10 @@ void Software_config()
 		    xTaskCreate((TaskFunction_t)  Buzzer_handler,       	     "Buzzer",   200,    NULL,  8, &buzzer_handle));
 
 	configASSERT(
-		    xTaskCreate((TaskFunction_t)  GPS_handler,          		 "GPS",     1000,   NULL,  4,  &GPS_handle));
+			    xTaskCreate((TaskFunction_t)  GPS_handler,          		 "GPS",     1000,   NULL,  4,  &GPS_handle));
+
+	configASSERT(
+			    xTaskCreate((TaskFunction_t)  xbee_handler,          		 "xbee",     1000,   NULL,  4,  &xbee_handle));
 
 	vSemaphoreCreateBinary( GPS_Semaphore );
 

@@ -77,7 +77,7 @@ void Error_Handler(void);
 #define INPUT_DRIVE_REVERSE_GPIO_Port GPIOC
 #define ADC_PEDALA_Pin GPIO_PIN_0
 #define ADC_PEDALA_GPIO_Port GPIOA
-#define GPS_TX_Pin GPIO_PIN_2
+#define GPS_TX_Pin GPIO_PIN_1
 #define GPS_TX_GPIO_Port GPIOA
 #define LD2_Pin GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA

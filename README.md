@@ -18,4 +18,13 @@ A0 in dreapta de tot, A1 mijloc, A2 stanga
 # idei care nu mergeau:
 ## Codul De Transmitere telemetrie catre MPPT nu functioneaza cum trebuie.
 ## Atentie la timeout-urile de la comunicatii produse de task-uri prea indelungate..
-		
+
+
+#Adaugare Telemetrie: 		
+	GPS_TX s-a scimbat din PA2 -> PA1
+	xbee e conectat la PA1/PA2	
+	RTC din telemetrie nu mai functioneaza
+	S-ar mai putea curata codul
+	
+
+
