@@ -1,10 +1,3 @@
-/*
- * efficiency.h
- *
- *  Created on: Feb 18, 2026
- *      Author: Antigravity
- */
-
 #ifndef INC_TASKS_HEADERS_EFFICIENCY_H_
 #define INC_TASKS_HEADERS_EFFICIENCY_H_
 
@@ -13,7 +6,7 @@
 typedef struct {
 	float instantaneous_wh_km;
 	float rolling_avg_wh_km;
-    // Debug/internal info if needed
+    
     float accumulated_wh;
     float accumulated_dist_km;
 } Efficiency_Metrics_t;
