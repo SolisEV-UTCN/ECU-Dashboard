@@ -1,5 +1,6 @@
 #include"main.h"
 
+
 extern CAN_HandleTypeDef hcan;
 extern QueueHandle_t Can_Queue; // USED FOR BLOCKING THE Can_received_handler() IF EMPTY.
 extern struct Modules_Activity ActivityCheck; // USED FOR THE BOOT_DISPLAY TO SHOW IF ALL THE MODULES FROM THE BUS ARE CONNECTED.
@@ -101,6 +102,11 @@ void Can_receive_handler()
 			can_data.invertor.motor_velocity.Uint32 = (msg.data.byte[7] << 24) | (msg.data.byte[6] << 16) | (msg.data.byte[5] << 8) | msg.data.byte[4];
 
 			can_data.invertor.motor_rpm.Uint32 =      (msg.data.byte[3] << 24) | (msg.data.byte[2] << 16) | (msg.data.byte[1] << 8) | msg.data.byte[0];
+
+			// Calculate Power and Speed for Efficiency Metric
+            float power_W = (float)(battery_current * battery_voltage) / 1000000.0f;
+            float speed_kmh = can_data.invertor.motor_velocity.Float32 * 3.6f;
+            Efficiency_UpdateInstantaneous(power_W, speed_kmh);
 
 			break;
 

@@ -1,5 +1,6 @@
 #include"main.h"
 
+
 uint8_t rxBuffer[128] = {0};
 uint8_t rxIndex = 0;
 uint8_t rxData;
@@ -32,6 +33,7 @@ void gpsParse(char *strParse) {
            &fixQuality, &satelliteNumber);
     decimalLat.Float32 = nmeaToDecimal(nmeaLat);
     decimalLong.Float32 = nmeaToDecimal(nmeaLong);
+    if(fixQuality > 0) Efficiency_UpdateLocation(decimalLat.Float32, decimalLong.Float32);
   }
   // Acceptă GPRMC + GNRMC
   else if (strstr(strParse, "RMC")) {
@@ -40,6 +42,7 @@ void gpsParse(char *strParse) {
            &utcTime, &posStatus, &nmeaLat, &northsouth, &nmeaLong, &eastwest, &speedKnots);
     decimalLat.Float32 = nmeaToDecimal(nmeaLat);
     decimalLong.Float32 = nmeaToDecimal(nmeaLong);
+    if(posStatus == 'A') Efficiency_UpdateLocation(decimalLat.Float32, decimalLong.Float32);
   }
   // Acceptă GPGLL + GNGLL
   else if (strstr(strParse, "GLL")) {

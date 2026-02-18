@@ -105,6 +105,7 @@ int main(void)
 	/*************************************PERIPHERAL INITIALIZATION START HERE ***********************************************/
     configASSERT(!HAL_CAN_Start(&hcan));
 	Display_Init();
+    Efficiency_Init();
 
 	/*************************************PERIPHERAL INITIALIZATION END HERE ***********************************************/
 #if (SEGGER_DEBUG_PROBE == 1)
