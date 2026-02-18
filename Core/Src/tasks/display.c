@@ -1,6 +1,7 @@
 #include"main.h"
 
 
+
 enum display display_state = BOOT_DISPLAY; // USED FOR SWITCHING DISPLAYS WHEN THE DISPLAY_SWITCH BUTTON IS PRESSED.
 extern struct buttons_layout buttons;
 extern struct buttons_layout previous_button_state;

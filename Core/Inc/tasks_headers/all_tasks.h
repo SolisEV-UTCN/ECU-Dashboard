@@ -9,6 +9,7 @@
 #include"error.h"
 #include"cruise.h"
 #include"GPS.h"
+#include"efficiency.h"
 /*END USER INCLUDES*/
 
 /*USER DEFINES HERE*/

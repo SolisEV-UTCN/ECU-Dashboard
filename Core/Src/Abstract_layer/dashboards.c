@@ -1,5 +1,6 @@
 #include"main.h"
 
+
 extern I2C_HandleTypeDef hi2c1;
 extern struct Data_aquisition_can can_data;
 extern struct buttons_layout buttons;
@@ -56,7 +57,15 @@ void MAIN_Display(char *buffer)
 							/1000000.0f;
 
 	HD44780_SetCursor(0, 2);
-	snprintf(buffer, 21, "POWER:    %6.1f   ", bms_power);
+    // Efficiency Metrics
+    Efficiency_Metrics_t eff = Efficiency_GetMetrics();
+    float speed = can_data.invertor.motor_velocity.Float32 * 3.6f;
+    
+    if (speed < 3.0f) {
+        snprintf(buffer, 21, "P:%4.0f I:--- A:%3.0f", bms_power, eff.rolling_avg_wh_km);
+    } else {
+        snprintf(buffer, 21, "P:%4.0f I:%3.0f A:%3.0f", bms_power, eff.instantaneous_wh_km, eff.rolling_avg_wh_km);
+    }
 	HD44780_PrintStr(buffer);
 
 	//forth row
