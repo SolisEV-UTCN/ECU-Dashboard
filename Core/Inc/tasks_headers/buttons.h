@@ -34,10 +34,10 @@ struct steering_wheel
 	uint8_t blink_right;
 	uint8_t blink_left;
 	uint8_t brake_swap;
-	uint8_t cruise_down;
-	uint8_t cruise_up;
-	uint8_t cruise_on;
-	uint8_t avarie;
+	uint8_t hazards;
+	uint8_t horn;
+	uint8_t spare2;
+	uint8_t spare1;
 };
 
 struct mechanical_pedal

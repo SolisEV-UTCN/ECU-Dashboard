@@ -82,9 +82,6 @@ void MAIN_Display(char *buffer)
 				strncpy(drive_state, "REGEN ", sizeof(drive_state));
 		else if( buttons.panel.drv_forward == BUTTON_IS_PRESSED )
 		{
-			if( buttons.wheel.cruise_on == BUTTON_IS_PRESSED )
-				strncpy(drive_state, "CRUISE", sizeof(drive_state));
-			else
 				strncpy(drive_state, "FORWRD", sizeof(drive_state));
 		}
 		else if( buttons.panel.drv_reverse == BUTTON_IS_PRESSED )
@@ -102,17 +99,17 @@ void MAIN_Display(char *buffer)
 						 (can_data.mppt4.output_current * can_data.mppt4.output_voltage) );
 
 #if( GUN_POINT_ROAD_TESTING == 1)
-	if( buttons.wheel.cruise_down == BUTTON_IS_PRESSED)
+	if( buttons.panel.fan == BUTTON_IS_PRESSED)
 	snprintf(buffer,21,"%5.1f FAN %s %s", 	mppt_power,
 										  	GetSign(buttons.wheel.blink_left,
 											buttons.wheel.blink_right,
-											buttons.wheel.avarie),
+											buttons.wheel.hazards),
 											drive_state);
 	else
 	snprintf(buffer,21,"%5.1f     %s %s", 	mppt_power,
 											GetSign(buttons.wheel.blink_left,
 											buttons.wheel.blink_right,
-											buttons.wheel.avarie),
+											buttons.wheel.hazards),
 											drive_state);
 #endif
 

@@ -16,10 +16,10 @@ struct steering_wheel Wheel_Adress = {   .display_switch = 0x00,
 									     .blink_right    = 0x01,
 										 .blink_left     = 0x02,
 										 .brake_swap     = 0x03,
-										 .cruise_down    = 0x04,
-										 .cruise_up      = 0x05,
-										 .cruise_on      = 0x06,
-										 .avarie         = 0x07
+										 .hazards    = 0x04,
+										 .horn      = 0x05,
+										 .spare2      = 0x06,
+										 .spare1         = 0x07
 										};
 
 /*	THIS FUNCTION READS THE VALUE OF THE MULTIPLEXOR'S OUTPUT PIN	*/

@@ -28,58 +28,9 @@ uint8_t Cruise_Set_Flag = 0;
  */
 void motor_control()
 {
-	static enum Driving_Mode Drive_Mode = 0;
 
-	if( buttons.wheel.cruise_on == BUTTON_IS_PRESSED )
-	{
-		if( 	current_reffrence.Float32   <  SAFETY_CUT_CRUISE_CONTROL &&
-				buttons.wheel.brake_swap   !=  BUTTON_IS_PRESSED         &&
-				buttons.pedal.brake_lights !=  BUTTON_IS_PRESSED)
-		{
-			Drive_Mode = INERTION_CRUISE_CONTROL;
-			if( Cruise_Set_Flag == FALSE)
-			{
-				Cruise_Set_Point = can_data.invertor.motor_rpm.Float32;
-				Cruise_Set_Flag = TRUE;
-			}
-		}
-		else
-		{
-			Drive_Mode = PEDAL_ACCELERATION_MODE;
-			Rising_Edge_Release(&buttons.wheel.cruise_on,
-								&previous_button_state.wheel.cruise_on);
-			Cruise_Set_Flag = FALSE;
-		}
-	}
-	else Drive_Mode = PEDAL_ACCELERATION_MODE;
+	Pedal_Mode();
 
-	switch( Drive_Mode )
-	{
-		case PEDAL_ACCELERATION_MODE:
-
-			Pedal_Mode();
-
-			break;
-
-		case CRUISE_CONTROL_MODE:
-
-			Cruise_Control_Mode();
-
-			break;
-
-		case SOLAR_ONLY_MODE:
-
-			//NOT IMPLEMENTED YET, FOR FUTURE IMPROVEMENTS
-			Solar_Only_Mode();
-
-		case INERTION_CRUISE_CONTROL:
-
-			Inertion_Cruise_Control();
-
-			break;
-
-		break;
-	}
 
 	//insert the values into the can bytes
 	Transmit_motor_control(velocity, current_reffrence);
@@ -103,53 +54,6 @@ void Pedal_Mode()
 			velocity.Float32 = 0.0f;
 	}
 
-}
-
-void Cruise_Control_Mode()
-{
-	current_reffrence.Float32 = 1.0f; //MAXIMUM CURRENT REFFRENCE
-
-	if( buttons.wheel.cruise_up == BUTTON_IS_PRESSED )
-	{
-		Cruise_Set_Point += CRUISE_UP_VALUE;
-		Rising_Edge_Release(	&buttons.wheel.cruise_up,
-								&previous_button_state.wheel.cruise_on);
-	}
-
-	else if( buttons.wheel.cruise_down == BUTTON_IS_PRESSED )
-	{
-		Cruise_Set_Point -= CRUISE_DOWN_VALUE;
-		Rising_Edge_Release(	&buttons.wheel.cruise_down,
-								&previous_button_state.wheel.cruise_down);
-	}
-
-	velocity.Float32 = Cruise_Set_Point;
-}
-
-void Solar_Only_Mode()
-{
-
-}
-
-void Inertion_Cruise_Control()
-{
-	float   check_RPM = can_data.invertor.motor_rpm.Float32; //400
-	static  uint8_t accel_on_flag = 0;
-
-	if( check_RPM - Cruise_Set_Point < FIVE_KM_IN_RPM && accel_on_flag == 0)
-		current_reffrence.Float32 = 1.0f;
-	else
-	{
-		accel_on_flag = 1;
-		current_reffrence.Float32 = 0.0f;
-	}
-
-	if( Cruise_Set_Point - check_RPM > 0 && accel_on_flag == 1)
-	{
-		accel_on_flag = 0;
-	}
-
-	velocity.Float32 = Cruise_Set_Point + FIVE_KM_IN_RPM + 10.0f; // CHECK IF ITS BETTER WITH LOWER RPM
 }
 
 void Transmit_motor_control(union reinterpret_cast velocity, union reinterpret_cast current_reffrence)

@@ -67,15 +67,13 @@ void Buttons_handler()
 		buttons.wheel.brake_swap     = Steering_Wheel_Reading(Wheel_Adress.brake_swap)?
 									min(buttons.wheel.brake_swap + 1, BUTTON_IS_PRESSED) : 0;
 
-#if ( GUN_POINT_ROAD_TESTING == 1)
-		buttons.wheel.cruise_up	     = Steering_Wheel_Reading(Wheel_Adress.cruise_up)?
-									min(buttons.wheel.cruise_up + 1, BUTTON_IS_PRESSED)  : 0;
+		buttons.wheel.horn	     = Steering_Wheel_Reading(Wheel_Adress.horn)?
+									min(buttons.wheel.horn + 1, BUTTON_IS_PRESSED)  : 0;
 
-		Rising_Edge_Toggle(&buttons.wheel.cruise_down,
-							Wheel_Adress.cruise_down,
-							&previous_button_state.wheel.cruise_down,
+		Rising_Edge_Toggle(&buttons.wheel.hazards,
+							Wheel_Adress.hazards,
+							&previous_button_state.wheel.hazards,
 							TRUE);
-#endif
 
 		Rising_Edge_Toggle(	&buttons.wheel.blink_left,
 				 	 	 	Wheel_Adress.blink_left,
@@ -87,31 +85,19 @@ void Buttons_handler()
 							&previous_button_state.wheel.blink_right,
 							TRUE);
 
-	    Rising_Edge_Toggle(	&buttons.wheel.cruise_on,
-				 	 	 	Wheel_Adress.cruise_on,
-							&previous_button_state.wheel.cruise_on,
+	    Rising_Edge_Toggle(	&buttons.wheel.spare2,
+				 	 	 	Wheel_Adress.spare2,
+							&previous_button_state.wheel.spare2,
 							FALSE);
 
-		Rising_Edge_Toggle(	&buttons.wheel.avarie,
-				 	 	 	Wheel_Adress.avarie,
-							&previous_button_state.wheel.avarie,
+		Rising_Edge_Toggle(	&buttons.wheel.spare1,
+				 	 	 	Wheel_Adress.spare1,
+							&previous_button_state.wheel.spare1,
 							FALSE);
 
 		/* THIS BUTTON IS RELEASED IN THE display.c FILE AT THE LINE 29 */
 		Rising_Edge_Press(	&buttons.wheel.display_switch,
 							Wheel_Adress.display_switch,
 							&previous_button_state.wheel.display_switch);
-
-#if ( PIT_TESTING == 1)
-		/*THIS BUTTON IS RELEASED IN THE invertor.c FILE AT THE LINE 92*/
-		Rising_Edge_Press(	&buttons.wheel.cruise_down,
-							Wheel_Adress.cruise_down,
-							&previous_button_state.wheel.cruise_down);
-
-		/*THIS BUTTON IS RELEASED IN THE invertor.c FILE AT THE LINE 86*/
-		Rising_Edge_Press(	&buttons.wheel.cruise_up,
-							Wheel_Adress.cruise_up,
-							&previous_button_state.wheel.cruise_up);
-#endif
 	}
 }
